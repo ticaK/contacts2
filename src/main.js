@@ -16,17 +16,31 @@ const routes = [
   },
   {
     path: '/',
-    redirect: 'contacts'
+    redirect: 'contacts',
+    meta:{
+      requiresAuth:true
+    }
   },
   {
     path: '/contacts',
-    component: AppContacts
+    component: AppContacts,
+    meta:{
+      requiresAuth:true
+    }
   }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !authService.isAuthenticated) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 import { contactsService } from '@/services/ContactsService'
@@ -37,6 +51,10 @@ const store = new Vuex.Store({
   },
 
   actions: {
+   logout(context){
+      authService.logout();
+
+    },
     async login(context, credencials){
       await authService.login(credencials)
 

@@ -1,9 +1,12 @@
 <template>
+<div>
     <ul>
         <li v-for="contact in contacts" :key="contact.id">
             {{contact.first_name}}
         </li>
     </ul>
+    <button @click="handleLogout">Log out </button>
+    </div>
 </template>
 
 <script>
@@ -19,7 +22,11 @@ export default {
   },
 
  methods:{
-     ...mapActions(['fetchContacts'])
+     ...mapActions(['fetchContacts','logout']),
+     handleLogout(){
+         this.logout();
+         this.$router.push('/login');
+     }
     },
 
 computed:{
