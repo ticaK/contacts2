@@ -1,50 +1,76 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import VueRouter from 'vue-router'
 import App from './App.vue'
-import {contactsService} from './services/ContactsService'
 
-Vue.config.productionTip = false
+import AppLogin from '@/components/AppLogin'
+import AppContacts from '@/components/AppContacts'
+import {authService} from '@/services/Auth'
 Vue.use(Vuex)
+Vue.use(VueRouter)
+
+const routes = [
+  {
+    path: '/login',
+    component: AppLogin
+  },
+  {
+    path: '/',
+    redirect: 'contacts'
+  },
+  {
+    path: '/contacts',
+    component: AppContacts
+  }
+]
+
+const router = new VueRouter({
+  mode: 'history',
+  routes
+})
+
+import { contactsService } from '@/services/ContactsService'
 
 const store = new Vuex.Store({
-  state:{
-    contacts:[]
-    
-
+  state: {
+    contacts: []
   },
 
-  actions:{
-    async fetchContacts(context){
-      //zove metodu servisa i komituje mutaciju
+  actions: {
+    async login(context, credencials){
+      await authService.login(credencials)
+
+    },
+    async fetchContacts (context) {
       const response = await contactsService.getAll()
-      context.commit('SET_CONTACTS', response.data);
+      context.commit('SET_CONTACTS', response.data)
     },
 
-    async createContact(context, contact){
-      const response = await contactsService.create(contact);
-      context.commit('ADD_CONTACT',response.data);
-
+    async createContact (context, contact) {
+      const response = await contactsService.create(contact)
+      context.commit('ADD_CONTACT', response.data)
     }
-
   },
 
-  getters:{
-    contacts:state=>state.contacts
+  mutations: {
+    SET_CONTACTS (state, contacts) {
+      state.contacts = contacts
+    },
+
+    ADD_CONTACT (state, contact) {
+      state.contacts.push(contact)
+    }
   },
 
-  mutations:{
-      SET_CONTACTS(state, contacts){
-        state.contacts=contacts;
-        //kontakti koje imamo na state su ovi koji su stigli
-
-      },
-      ADD_CONTACT(state, contact){
-        state.contacts.push(contact);
-      }
+  getters: {
+    contacts: state => state.contacts
   }
-
 })
+
+Vue.config.productionTip = false
+
 new Vue({
   store,
+  router,
   render: h => h(App),
 }).$mount('#app')

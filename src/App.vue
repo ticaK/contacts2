@@ -1,19 +1,16 @@
 <template>
   <div id="app">
-    <add-contacts />
-   <app-contacts/>
+    <router-view />
   </div>
 </template>
 
 <script>
-import AppContacts from './components/AppContacts.vue'
-import AddContacts from './components/AddContacts.vue'
+
 
 export default {
   name: 'app',
   components: {
-    AppContacts,
-    AddContacts
+  
     
   }
 }
